@@ -2,13 +2,13 @@ import {Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn} fro
 import { Ticket } from "./Ticket";
 
 @Entity()
-export class Events {
+export class Occasion {
 
     @PrimaryGeneratedColumn()
     id: number;
 
     @Column()
-    event_name: string;
+    name: string;
 
     @Column()
     description: string;
@@ -17,15 +17,15 @@ export class Events {
     max_quantity: number;
     
     @CreateDateColumn({ type: 'timestamp' })
-    event_start_time: Date;
+    start_time: Date;
 
     @CreateDateColumn({ type: 'timestamp' })
-    event_end_time: Date;
+    end_time: Date;
 
     @CreateDateColumn({ type: 'timestamp' })
     created_at: Date;
 
-    @OneToMany(() => Ticket, ticket => ticket.event_id)
+    @OneToMany(() => Ticket, ticket => ticket.occasion_id)
     tickets: Ticket[];
 
 }

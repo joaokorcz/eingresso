@@ -17,6 +17,15 @@ export class UserController {
         return this.userRepo.save(user);
     }
 
+    @Post('various')
+    async storeVarious(@Body() body: User[]): Promise<User[]> {
+        const users = [];
+        body.forEach(user => {
+            users.push(this.userRepo.create(user));
+        });
+        return this.userRepo.save(users);
+    }
+
     @Get()
     async index(): Promise<User[]> {
         return this.userRepo.find();

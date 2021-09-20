@@ -18,7 +18,7 @@ export class CreateTicketTable1631883448394 implements MigrationInterface {
                     type: 'int'
                 },
                 {
-                    name: 'event_id',
+                    name: 'occasion_id',
                     type: 'int'
                 },
                 {
@@ -45,9 +45,9 @@ export class CreateTicketTable1631883448394 implements MigrationInterface {
         await queryRunner.createForeignKey(
             'ticket',
             new TableForeignKey({
-                columnNames: ['event_id'],
+                columnNames: ['occasion_id'],
                 referencedColumnNames: ['id'],
-                referencedTableName: 'event'
+                referencedTableName: 'occasion'
             })
         );
     }
