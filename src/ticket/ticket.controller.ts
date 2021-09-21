@@ -1,4 +1,4 @@
-import { Body, Controller, Get, HttpException, HttpStatus, Param, Post } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpCode, HttpException, HttpStatus, Param, Post } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Occasion } from 'src/database/models/Occasion';
 import { Ticket } from 'src/database/models/Ticket';
@@ -36,23 +36,39 @@ export class TicketController {
             if (exists) throw new HttpException('Cadeira já ocupada 8(', HttpStatus.PRECONDITION_FAILED);
         });
         const ticket = this.ticketRepo.create(body);
-        return this.ticketRepo.save(ticket);
+        return await this.ticketRepo.save(ticket);
     }
 
     @Get()
     async index(): Promise<Ticket[]> {
-        return this.ticketRepo.find();
+        return await this.ticketRepo.find();
     }
 
     @Get(':occasionId')
-    async indexByEventsId(@Param('occasionId') occasionId: string): Promise<Ticket[]> {
-        return this.ticketRepo.find({
+    async indexByOccasionId(@Param('occasionId') occasionId: string): Promise<Ticket[]> {
+        return await this.ticketRepo.find({
             where: {
-                occasion_id: parseInt(occasionId),
+                occasion_id: +occasionId,
             },
             relations: ['user_id', 'occasion_id'],
             order: { chair: "ASC" }
         });
+    }
+
+    @Delete(':occasionId')
+    @HttpCode(204)
+    async deleteByChair(@Param('occasionId') occasionId: string,
+        @Body('chair') chair: number): Promise<Ticket> {
+        await this.occasionRepo.findOneOrFail({
+            where: { id: occasionId }
+        }).catch(() => { throw new HttpException('Esta ocasião não existe', HttpStatus.PRECONDITION_FAILED) });
+        const exists = await this.ticketRepo.findOneOrFail({
+            where: {
+                occasion_id: +occasionId,
+                chair: chair
+            }
+        }).catch(() => { throw new HttpException('Cadeira ainda não reservada', HttpStatus.PRECONDITION_FAILED) });        
+        return await this.ticketRepo.remove(exists);
     }
 
 }

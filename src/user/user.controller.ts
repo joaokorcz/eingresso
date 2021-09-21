@@ -14,7 +14,7 @@ export class UserController {
     @Post()
     async store(@Body() body: User): Promise<User> {
         const user = this.userRepo.create(body);
-        return this.userRepo.save(user);
+        return await this.userRepo.save(user);
     }
 
     @Post('various')
@@ -23,7 +23,7 @@ export class UserController {
         body.forEach(user => {
             users.push(this.userRepo.create(user));
         });
-        return this.userRepo.save(users);
+        return await this.userRepo.save(users);
     }
 
     @Get()
